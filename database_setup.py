@@ -1,16 +1,31 @@
 import sqlite3
+import os
 
-conn = sqlite3.connect('database.db')
-cursor = conn.cursor()
+db_file = 'database.db'
 
-# Create users table
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL
-    )
-''')
+# Check if database file exists
+if not os.path.exists(db_file):
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
 
-conn.commit()
-conn.close()
+    # Create users table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL
+        )
+    ''')
+
+    # Seed data
+    cursor.execute('''
+        INSERT INTO users (username, password) VALUES
+        ('user1', 'password1'),
+        ('user2', 'password2'),
+        ('user3', 'password3')
+    ''')
+
+    conn.commit()
+    conn.close()
+else:
+    print(f"Database '{db_file}' already exists.")
