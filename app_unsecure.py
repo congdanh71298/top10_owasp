@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template_string, redirect, url_for, session
 import sqlite3
 import os
+from templates.views import LOGIN_FORM, REGISTER_FORM, CHECKOUT_FORM, UPDATE_FORM
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -37,13 +38,7 @@ def register():
         conn.commit()
         conn.close()
         return "User registered."
-    return render_template_string('''
-        <form method="post">
-            Username: <input name="username"><br>
-            Password: <input name="password" type="password"><br>
-            <input type="submit">
-        </form>
-    ''')
+    return render_template_string(REGISTER_FORM)
 
 # A03:2021 - Injection
 @app.route('/login', methods=['GET', 'POST'])
@@ -63,13 +58,7 @@ def login():
             return redirect(url_for('user_profile', username=user[1]))
         else:
             return "Invalid credentials."
-    return render_template_string('''
-        <form method="post">
-            Username: <input name="username"><br>
-            Password: <input name="password" type="password"><br>
-            <input type="submit">
-        </form>
-    ''')
+    return render_template_string(LOGIN_FORM)
 
 # A04:2021 - Insecure Design
 @app.route('/checkout', methods=['GET', 'POST'])
@@ -81,6 +70,7 @@ def checkout():
         price = get_item_price(item_id)
         total = price * quantity
         return f"Total price: ${total}"
+    return render_template_string(CHECKOUT_FORM)
 
 # A05:2021 - Security Misconfiguration
 @app.route('/debug')
@@ -108,7 +98,7 @@ def update():
     # Vulnerable code: Unverified file upload
     file = request.files['file']
     file.save(f"./updates/{file.filename}")
-    return "File uploaded."
+    return render_template_string(UPDATE_FORM)
 
 # A09:2021 - Security Logging and Monitoring Failures
 @app.route('/login_attempt', methods=['POST'])
@@ -127,4 +117,4 @@ def fetch():
     return response.content
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

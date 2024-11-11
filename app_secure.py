@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template_string, redirect, url_for, session
+from templates.views import LOGIN_FORM, REGISTER_FORM, CHECKOUT_FORM, UPDATE_FORM
 import sqlite3
 import hashlib
 import os
@@ -35,13 +36,7 @@ def register_secure():
         conn.commit()
         conn.close()
         return "User registered securely."
-    return render_template_string('''
-        <form method="post">
-            Username: <input name="username"><br>
-            Password: <input name="password" type="password"><br>
-            <input type="submit">
-        </form>
-    ''')
+    return render_template_string(REGISTER_FORM)
 
 # A03:2021 - Injection
 @app.route('/login_secure', methods=['GET', 'POST'])
@@ -60,13 +55,7 @@ def login_secure():
             return redirect(url_for('user_profile_secure'))
         else:
             return "Invalid credentials."
-    return render_template_string('''
-        <form method="post">
-            Username: <input name="username"><br>
-            Password: <input name="password" type="password"><br>
-            <input type="submit">
-        </form>
-    ''')
+    return render_template_string(LOGIN_FORM)
 
 # A04:2021 - Insecure Design
 @app.route('/checkout_secure', methods=['GET', 'POST'])
@@ -81,6 +70,7 @@ def checkout_secure():
         price = get_item_price(item_id)
         total = price * quantity
         return f"Total price: ${total}"
+    return render_template_string(CHECKOUT_FORM)
 
 # A05:2021 - Security Misconfiguration
 @app.route('/debug_secure')
@@ -113,6 +103,7 @@ def update_secure():
         return "File uploaded securely."
     else:
         return "Invalid file type."
+    return render_template_string(UPDATE_FORM)
 
 # A09:2021 - Security Logging and Monitoring Failures
 @app.route('/login_attempt_secure', methods=['POST'])
