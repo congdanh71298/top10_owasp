@@ -1,3 +1,4 @@
+
 from flask import Flask, request, render_template_string, redirect, url_for, session
 import sqlite3
 import os
@@ -8,7 +9,7 @@ app.secret_key = os.urandom(24)
 
 # Database connection
 def get_db_connection():
-    conn = sqlite3.connect('database_unsecure.db')
+    conn = sqlite3.connect('database_insecure.db')
     return conn
 
 # A01:2021 - Broken Access Control

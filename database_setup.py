@@ -1,7 +1,7 @@
 import sqlite3
 import os
 
-db_file_unsecure = 'database_unsecure.db'
+db_file_insecure = 'database_insecure.db'
 db_file_secure = 'database_secure.db'
 
 # Function to setup database
@@ -32,8 +32,8 @@ def setup_database(db_file):
     else:
         print(f"Database '{db_file}' already exists.")
 
-# Setup unsecure database
-setup_database(db_file_unsecure)
+# Setup insecure database
+setup_database(db_file_insecure)
 
 # Setup secure database
 setup_database(db_file_secure)
