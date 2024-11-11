@@ -7,7 +7,7 @@ app.secret_key = os.urandom(24)
 
 # Database connection
 def get_db_connection():
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect('database_unsecure.db')
     return conn
 
 # A01:2021 - Broken Access Control

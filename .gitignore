@@ -1,2 +1,3 @@
-# ...existing entries...
-database.db
+# Ignore database files
+database_unsecure.db
+database_secure.db
