@@ -21,9 +21,25 @@ python database_setup.py
 
 3. Run the application:
 
+### Insecure Version
+
+To run the insecure version of the application on port 5000:
+
 ```bash
-python app.py
+python app_insecure.py
 ```
+
+Access the application at http://localhost:5000.
+
+### Secure Version
+
+To run the secure version of the application on port 5001:
+
+```bash
+python app_secure.py
+```
+
+Access the application at http://localhost:5001.
 
 ## OWASP Top 10 Demonstrations
 
@@ -81,11 +97,14 @@ The application includes examples of both vulnerable and secure implementations 
 ## Project Structure
 
 ```
-├── app.py               # Main application with vulnerable and secure implementations
-├── database_setup.py    # Database initialization script
-├── requirements.txt     # Python package requirements
-├── environment.yml      # Conda environment configuration
-└── README.md            # Project documentation
+├── app_insecure.py # Insecure version of the application
+├── app_secure.py # Secure version of the application
+├── database_setup.py # Database initialization script
+├── requirements.txt # Python package requirements
+├── environment.yml # Conda environment configuration
+├── templates # HTML templates
+└── README.md # Project documentation
+
 ```
 
 ## Warning

@@ -1,4 +1,3 @@
-
 from flask import Flask, request, render_template_string, redirect, url_for, session
 import sqlite3
 import os
@@ -118,4 +117,4 @@ def fetch():
     return response.content
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=5001, debug=False)
