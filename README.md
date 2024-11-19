@@ -1,4 +1,4 @@
-# OWASP Top 10 Vulnerabilities Demo
+# OWASP Top 10 Vulnerabilities Demo with Flask
 
 This project demonstrates the OWASP Top 10 Web Application Security Risks with both vulnerable and secure implementations using Flask.
 
