@@ -1,3 +1,7 @@
-# Ignore database files
-database_insecure.db
-database_secure.db
+
+*.pyc
+__pycache__/
+db.sqlite3
+/media
+/static
+.env
