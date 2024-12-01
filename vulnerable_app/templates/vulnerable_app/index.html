@@ -1,9 +1,244 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Vulnerable App Index</title>
-</head>
-<body>
-    <h1>Welcome to the Vulnerable App</h1>
-</body>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>OWASP Top 10 2021 Vulnerability Demos</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+      }
+      h1 {
+        color: #333;
+      }
+      .vulnerability {
+        background-color: #f4f4f4;
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-bottom: 15px;
+      }
+      .vulnerable-input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+      }
+      #xss-output {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>OWASP Top 10 2021 Vulnerability Demonstrations</h1>
+
+    <div class="vulnerability">
+      <h2>1. Broken Access Control</h2>
+      <p>Simulating unauthorized access to admin resources:</p>
+      <button id="admin-access-btn">Access Admin Panel</button>
+      <div id="admin-access-result"></div>
+    </div>
+
+    <div class="vulnerability">
+      <h2>2. Cryptographic Failures</h2>
+      <p>Insecure password storage:</p>
+      <input
+        type="text"
+        id="plain-password"
+        class="vulnerable-input"
+        placeholder="Password stored in plain text"
+      />
+      <button onclick="storePlainPassword()">Store Password</button>
+    </div>
+
+    <div class="vulnerability">
+      <h2>3. Injection</h2>
+      <p>SQL Injection Vulnerability:</p>
+      <input
+        type="text"
+        id="sql-injection-input"
+        class="vulnerable-input"
+        placeholder="Enter username"
+      />
+      <button onclick="performSQLInjection()">Login</button>
+      <div id="sql-injection-result"></div>
+    </div>
+
+    <div class="vulnerability">
+      <h2>4. Insecure Design</h2>
+      <p>Weak Password Reset Mechanism:</p>
+      <input
+        type="text"
+        id="reset-email"
+        class="vulnerable-input"
+        placeholder="Enter email"
+      />
+      <button onclick="resetPassword()">Reset Password</button>
+    </div>
+
+    <div class="vulnerability">
+      <h2>5. Security Misconfiguration</h2>
+      <p>Exposed Sensitive Server Information:</p>
+      <button onclick="checkServerInfo()">Check Server Details</button>
+      <div id="server-info"></div>
+    </div>
+
+    <div class="vulnerability">
+      <h2>6. Vulnerable and Outdated Components</h2>
+      <p>Unpatched Library Vulnerability:</p>
+      <button onclick="checkLibraryVulnerability()">Scan Libraries</button>
+      <div id="library-vulnerability-result"></div>
+    </div>
+
+    <div class="vulnerability">
+      <h2>7. Identification and Authentication Failures</h2>
+      <p>Weak Authentication:</p>
+      <input
+        type="text"
+        id="weak-username"
+        class="vulnerable-input"
+        placeholder="Username"
+      />
+      <input
+        type="password"
+        id="weak-password"
+        class="vulnerable-input"
+        placeholder="Password"
+      />
+      <button onclick="weakLogin()">Login</button>
+    </div>
+
+    <div class="vulnerability">
+      <h2>8. Software and Data Integrity Failures</h2>
+      <p>Unverified Plugin Installation:</p>
+      <input
+        type="text"
+        id="plugin-url"
+        class="vulnerable-input"
+        placeholder="Plugin URL"
+      />
+      <button onclick="installPlugin()">Install Plugin</button>
+    </div>
+
+    <div class="vulnerability">
+      <h2>9. Security Logging and Monitoring Failures</h2>
+      <p>Inadequate Logging:</p>
+      <button onclick="simulateSecurityEvent()">Trigger Event</button>
+      <div id="logging-result"></div>
+    </div>
+
+    <div class="vulnerability">
+      <h2>10. Server-Side Request Forgery (SSRF)</h2>
+      <p>Unauthorized Resource Fetching:</p>
+      <input
+        type="text"
+        id="ssrf-url"
+        class="vulnerable-input"
+        placeholder="Enter URL to fetch"
+      />
+      <button onclick="fetchResourceSSRF()">Fetch Resource</button>
+      <div id="ssrf-result"></div>
+    </div>
+
+    <script>
+      // 1. Broken Access Control
+      document
+        .getElementById('admin-access-btn')
+        .addEventListener('click', function () {
+          const result = document.getElementById('admin-access-result');
+          result.innerHTML =
+            'VULNERABILITY: Accessed admin panel without proper authorization!';
+          result.style.color = 'red';
+        });
+
+      // 2. Cryptographic Failures
+      function storePlainPassword() {
+        const password = document.getElementById('plain-password').value;
+        alert(`VULNERABILITY: Password stored in plain text: ${password}`);
+      }
+
+      // 3. Injection
+      function performSQLInjection() {
+        const username = document.getElementById('sql-injection-input').value;
+        const result = document.getElementById('sql-injection-result');
+
+        // Simulating vulnerability with malicious input
+        if (username === "admin' --") {
+          result.innerHTML = 'LOGIN BYPASSED! Injection successful.';
+          result.style.color = 'red';
+        } else {
+          result.innerHTML = 'Login failed';
+        }
+      }
+
+      // 4. Insecure Design
+      function resetPassword() {
+        const email = document.getElementById('reset-email').value;
+        alert(
+          `VULNERABILITY: Weak password reset for ${email}. No multi-factor verification!`
+        );
+      }
+
+      // 5. Security Misconfiguration
+      function checkServerInfo() {
+        const serverInfo = document.getElementById('server-info');
+        serverInfo.innerHTML =
+          'VULNERABILITY: Exposed Server Details:<br>' +
+          '- Server Version: Apache Tomcat/9.0.1<br>' +
+          '- PHP Version: 7.2.5<br>' +
+          '- Database: MySQL 5.7.22';
+        serverInfo.style.color = 'red';
+      }
+
+      // 6. Vulnerable and Outdated Components
+      function checkLibraryVulnerability() {
+        const result = document.getElementById('library-vulnerability-result');
+        result.innerHTML =
+          'VULNERABILITY: Detected outdated libraries:<br>' +
+          '- jQuery (v1.9.1): Known XSS vulnerability<br>' +
+          '- Bootstrap (v3.3.7): Unpatched security issues';
+        result.style.color = 'red';
+      }
+
+      // 7. Identification and Authentication Failures
+      function weakLogin() {
+        const username = document.getElementById('weak-username').value;
+        const password = document.getElementById('weak-password').value;
+
+        // Extremely weak authentication
+        if (username === 'admin' && password === 'password') {
+          alert('VULNERABILITY: Logged in with weak credentials!');
+        } else {
+          alert('Login failed');
+        }
+      }
+
+      // 8. Software and Data Integrity Failures
+      function installPlugin() {
+        const url = document.getElementById('plugin-url').value;
+        alert(`VULNERABILITY: Installed plugin from unverified source: ${url}`);
+      }
+
+      // 9. Security Logging and Monitoring Failures
+      function simulateSecurityEvent() {
+        const result = document.getElementById('logging-result');
+        result.innerHTML =
+          'VULNERABILITY: Insufficient logging of security event';
+        result.style.color = 'red';
+      }
+
+      // 10. Server-Side Request Forgery (SSRF)
+      function fetchResourceSSRF() {
+        const url = document.getElementById('ssrf-url').value;
+        const result = document.getElementById('ssrf-result');
+
+        // Simulating SSRF vulnerability
+        result.innerHTML = `VULNERABILITY: Attempted to fetch internal resource: ${url}`;
+        result.style.color = 'red';
+      }
+    </script>
+  </body>
 </html>

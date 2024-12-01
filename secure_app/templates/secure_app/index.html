@@ -1,9 +1,370 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Secure App Index</title>
-</head>
-<body>
-    <h1>Welcome to the Secure App</h1>
-</body>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Secure Web Application - OWASP Best Practices</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+      }
+      h1,
+      h2 {
+        color: #2c3e50;
+      }
+      .security-practice {
+        background-color: #f4f8f9;
+        border: 1px solid #b0c4de;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 15px;
+      }
+      .secure-input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      .result {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 4px;
+      }
+      .success {
+        background-color: #dff0d8;
+        color: #3c763d;
+      }
+      .error {
+        background-color: #f2dede;
+        color: #a94442;
+      }
+      .info {
+        background-color: #d9edf7;
+        color: #31708f;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Secure Web Application - OWASP Top 10 Mitigations</h1>
+
+    <div class="security-practice">
+      <h2>1. Access Control (RBAC Implementation)</h2>
+      <p>Role-Based Access Control with Proper Authorization Checks</p>
+      <select id="user-role" class="secure-input">
+        <option value="">Select User Role</option>
+        <option value="user">Regular User</option>
+        <option value="admin">Admin</option>
+      </select>
+      <button onclick="checkAccess()">Access Resource</button>
+      <div id="access-result" class="result"></div>
+    </div>
+
+    <div class="security-practice">
+      <h2>2. Secure Password Handling</h2>
+      <p>Secure Password Storage with Hashing and Salting</p>
+      <input
+        type="password"
+        id="secure-password"
+        class="secure-input"
+        placeholder="Enter Password"
+      />
+      <button onclick="securePasswordStorage()">Store Password</button>
+      <div id="password-result" class="result"></div>
+    </div>
+
+    <div class="security-practice">
+      <h2>3. Input Validation and Parameterized Queries</h2>
+      <p>Preventing SQL Injection with Prepared Statements</p>
+      <input
+        type="text"
+        id="username"
+        class="secure-input"
+        placeholder="Username"
+      />
+      <input
+        type="password"
+        id="login-password"
+        class="secure-input"
+        placeholder="Password"
+      />
+      <button onclick="secureLogin()">Login</button>
+      <div id="login-result" class="result"></div>
+    </div>
+
+    <div class="security-practice">
+      <h2>4. Secure Password Reset Mechanism</h2>
+      <p>Multi-Factor Authentication for Password Reset</p>
+      <input
+        type="email"
+        id="reset-email"
+        class="secure-input"
+        placeholder="Registered Email"
+      />
+      <button onclick="initiatePasswordReset()">Reset Password</button>
+      <div id="reset-result" class="result"></div>
+    </div>
+
+    <div class="security-practice">
+      <h2>5. Secure Server Configuration</h2>
+      <p>Minimal Information Disclosure</p>
+      <button onclick="checkSecureServerInfo()">View Server Status</button>
+      <div id="server-info" class="result"></div>
+    </div>
+
+    <div class="security-practice">
+      <h2>6. Dependency Management</h2>
+      <p>Automated Vulnerability Scanning for Dependencies</p>
+      <button onclick="scanDependencies()">Scan Libraries</button>
+      <div id="dependency-result" class="result"></div>
+    </div>
+
+    <div class="security-practice">
+      <h2>7. Strong Authentication</h2>
+      <p>Multi-Factor Authentication Implementation</p>
+      <input
+        type="text"
+        id="mfa-username"
+        class="secure-input"
+        placeholder="Username"
+      />
+      <input
+        type="password"
+        id="mfa-password"
+        class="secure-input"
+        placeholder="Password"
+      />
+      <input
+        type="text"
+        id="mfa-token"
+        class="secure-input"
+        placeholder="MFA Token"
+      />
+      <button onclick="secureMultiFactorLogin()">Login</button>
+      <div id="mfa-result" class="result"></div>
+    </div>
+
+    <div class="security-practice">
+      <h2>8. Secure Software Integrity</h2>
+      <p>Plugin Verification and Integrity Checks</p>
+      <input
+        type="text"
+        id="plugin-url"
+        class="secure-input"
+        placeholder="Plugin URL"
+      />
+      <button onclick="verifyPlugin()">Install Plugin</button>
+      <div id="plugin-result" class="result"></div>
+    </div>
+
+    <div class="security-practice">
+      <h2>9. Comprehensive Security Logging</h2>
+      <p>Detailed Security Event Logging</p>
+      <button onclick="triggerSecurityLogging()">
+        Simulate Security Event
+      </button>
+      <div id="logging-result" class="result"></div>
+    </div>
+
+    <div class="security-practice">
+      <h2>10. Request Validation and SSRF Prevention</h2>
+      <p>Strict URL Validation and Whitelisting</p>
+      <input
+        type="text"
+        id="safe-url"
+        class="secure-input"
+        placeholder="Enter URL to fetch"
+      />
+      <button onclick="safeResourceFetch()">Fetch Resource</button>
+      <div id="url-result" class="result"></div>
+    </div>
+
+    <script>
+      // 1. Role-Based Access Control
+      function checkAccess() {
+        const roleSelect = document.getElementById('user-role');
+        const resultDiv = document.getElementById('access-result');
+
+        if (roleSelect.value === 'admin') {
+          resultDiv.innerHTML =
+            '✅ Admin Access Granted with Proper Authorization';
+          resultDiv.className = 'result success';
+        } else if (roleSelect.value === 'user') {
+          resultDiv.innerHTML =
+            '✅ User Access Granted with Limited Permissions';
+          resultDiv.className = 'result info';
+        } else {
+          resultDiv.innerHTML = '❌ No Role Selected';
+          resultDiv.className = 'result error';
+        }
+      }
+
+      // 2. Secure Password Storage
+      function securePasswordStorage() {
+        const password = document.getElementById('secure-password').value;
+        const resultDiv = document.getElementById('password-result');
+
+        if (password.length < 12) {
+          resultDiv.innerHTML =
+            '❌ Password too short. Minimum 12 characters required.';
+          resultDiv.className = 'result error';
+          return;
+        }
+
+        // Simulate secure hashing (in real implementation, use bcrypt/argon2)
+        const hashedPassword = simulateSecureHash(password);
+        resultDiv.innerHTML =
+          '✅ Password securely hashed with salt and strong algorithm';
+        resultDiv.className = 'result success';
+      }
+
+      // 3. Secure Login with Input Validation
+      function secureLogin() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('login-password').value;
+        const resultDiv = document.getElementById('login-result');
+
+        // Validate input
+        if (!username || !password) {
+          resultDiv.innerHTML = '❌ Username and Password are required';
+          resultDiv.className = 'result error';
+          return;
+        }
+
+        // Simulate secure login validation
+        if (isValidCredentials(username, password)) {
+          resultDiv.innerHTML = '✅ Secure Login Successful';
+          resultDiv.className = 'result success';
+        } else {
+          resultDiv.innerHTML = '❌ Invalid Credentials';
+          resultDiv.className = 'result error';
+        }
+      }
+
+      // 4. Secure Password Reset
+      function initiatePasswordReset() {
+        const email = document.getElementById('reset-email').value;
+        const resultDiv = document.getElementById('reset-result');
+
+        // Basic email validation
+        if (!isValidEmail(email)) {
+          resultDiv.innerHTML = '❌ Invalid Email Format';
+          resultDiv.className = 'result error';
+          return;
+        }
+
+        // Simulate multi-factor reset process
+        resultDiv.innerHTML =
+          '✅ Reset Link Sent. Check email for 2FA verification.';
+        resultDiv.className = 'result info';
+      }
+
+      // 5. Secure Server Information
+      function checkSecureServerInfo() {
+        const resultDiv = document.getElementById('server-info');
+        resultDiv.innerHTML =
+          '✅ Server Status: Operational<br>Security Measures: Active';
+        resultDiv.className = 'result info';
+      }
+
+      // 6. Dependency Scanning
+      function scanDependencies() {
+        const resultDiv = document.getElementById('dependency-result');
+        resultDiv.innerHTML =
+          '✅ Dependency Scan Complete<br>No Critical Vulnerabilities Detected';
+        resultDiv.className = 'result success';
+      }
+
+      // 7. Multi-Factor Authentication
+      function secureMultiFactorLogin() {
+        const username = document.getElementById('mfa-username').value;
+        const password = document.getElementById('mfa-password').value;
+        const token = document.getElementById('mfa-token').value;
+        const resultDiv = document.getElementById('mfa-result');
+
+        // Simulate MFA validation
+        if (username && password && token) {
+          resultDiv.innerHTML = '✅ Multi-Factor Authentication Successful';
+          resultDiv.className = 'result success';
+        } else {
+          resultDiv.innerHTML = '❌ MFA Verification Failed';
+          resultDiv.className = 'result error';
+        }
+      }
+
+      // 8. Plugin Verification
+      function verifyPlugin() {
+        const url = document.getElementById('plugin-url').value;
+        const resultDiv = document.getElementById('plugin-result');
+
+        // Simulate URL and plugin integrity check
+        if (isValidPluginUrl(url)) {
+          resultDiv.innerHTML = '✅ Plugin Verified and Integrity Checked';
+          resultDiv.className = 'result success';
+        } else {
+          resultDiv.innerHTML = '❌ Invalid or Untrusted Plugin Source';
+          resultDiv.className = 'result error';
+        }
+      }
+
+      // 9. Security Logging
+      function triggerSecurityLogging() {
+        const resultDiv = document.getElementById('logging-result');
+        resultDiv.innerHTML = '✅ Security Event Logged with Detailed Context';
+        resultDiv.className = 'result info';
+      }
+
+      // 10. Safe URL Fetching
+      function safeResourceFetch() {
+        const url = document.getElementById('safe-url').value;
+        const resultDiv = document.getElementById('url-result');
+
+        // Simulate safe URL validation
+        if (isWhitelistedUrl(url)) {
+          resultDiv.innerHTML = '✅ Resource Fetched Securely';
+          resultDiv.className = 'result success';
+        } else {
+          resultDiv.innerHTML = '❌ URL Not Allowed';
+          resultDiv.className = 'result error';
+        }
+      }
+
+      // Utility Functions (Simulation of secure practices)
+      function simulateSecureHash(password) {
+        // In real implementation, use cryptographically secure hashing
+        return btoa(password + 'salt');
+      }
+
+      function isValidCredentials(username, password) {
+        // Simulate credential check
+        return username.length > 3 && password.length >= 12;
+      }
+
+      function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+      }
+
+      function isValidPluginUrl(url) {
+        // Whitelist of allowed domains
+        const allowedDomains = [
+          'https://trusted-plugins.com',
+          'https://verified-source.org',
+        ];
+        return allowedDomains.some((domain) => url.startsWith(domain));
+      }
+
+      function isWhitelistedUrl(url) {
+        // Strict URL validation
+        const whitelistedDomains = [
+          'https://api.example.com',
+          'https://secure-resources.org',
+        ];
+        return whitelistedDomains.some((domain) => url.startsWith(domain));
+      }
+    </script>
+  </body>
 </html>
