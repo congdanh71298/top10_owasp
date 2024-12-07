@@ -22,7 +22,10 @@
         <a class="navbar-brand" href="{% url 'index' %}">Todo App</a>
         <div class="d-flex">
           {% if user.is_authenticated %}
-            <a href="{% url 'logout' %}" class="btn btn-outline-primary">Logout</a>
+            <form method="post" action="{% url 'logout' %}" class="m-0">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-primary">Logout</button>
+            </form>
           {% else %}
             <a href="{% url 'login' %}" class="btn btn-outline-primary me-2">Login</a>
             <a href="{% url 'register' %}" class="btn btn-primary">Register</a>
@@ -34,6 +37,15 @@
 
     <!-- MDB JS -->
     <script src="{% static 'js/mdb.umd.min.js' %}"></script>
+    <script>
+      // Initialize MDB components
+      document.addEventListener('DOMContentLoaded', function() {
+        const elements = document.querySelectorAll('[data-mdb-input-init]');
+        elements.forEach(element => {
+          new mdb.Input(element).init();
+        });
+      });
+    </script>
     {% block extra_js %}{% endblock %}
   </body>
 </html>
