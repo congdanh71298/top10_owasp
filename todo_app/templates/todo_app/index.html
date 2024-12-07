@@ -5,88 +5,108 @@
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col col-xl-10">
-
         <div class="card" style="border-radius: 15px;">
           <div class="card-body p-5">
-
             <h6 class="mb-3">Awesome Todo List</h6>
 
-            <form class="d-flex justify-content-center align-items-center mb-4">
+            <form id="todo-form" class="d-flex justify-content-center align-items-center mb-4">
+              {% csrf_token %}
               <div data-mdb-input-init class="form-outline flex-fill">
-                <input type="text" id="form3" class="form-control form-control-lg" />
-                <label class="form-label" for="form3">What do you need to do today?</label>
+                <input type="text" id="todo-input" class="form-control form-control-lg" required />
+                <label class="form-label" for="todo-input">What do you need to do today?</label>
               </div>
-              <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg ms-2">Add</button>
+              <button type="submit" class="btn btn-primary btn-lg ms-2">Add</button>
             </form>
 
-            <ul class="list-group mb-0">
-              <li
-                class="list-group-item d-flex justify-content-between align-items-center border-start-0 border-top-0 border-end-0 border-bottom rounded-0 mb-2">
+            <ul id="todo-list" class="list-group mb-0">
+              {% for todo in todos %}
+              <li class="list-group-item d-flex justify-content-between align-items-center border-start-0 border-top-0 border-end-0 border-bottom rounded-0 mb-2" data-id="{{ todo.id }}">
                 <div class="d-flex align-items-center">
-                  <input class="form-check-input me-2" type="checkbox" value="" aria-label="..." />
-                  Cras justo odio
+                  <input class="form-check-input me-2 toggle-todo" type="checkbox" {% if todo.completed %}checked{% endif %} />
+                  <span class="{% if todo.completed %}text-decoration-line-through{% endif %}">{{ todo.task }}</span>
                 </div>
-                <a href="#!" data-mdb-tooltip-init title="Remove item">
+                <a href="#!" class="delete-todo" data-mdb-tooltip-init title="Remove item">
                   <i class="fas fa-times text-primary"></i>
                 </a>
               </li>
-              <li
-                class="list-group-item d-flex d-flex justify-content-between align-items-center border-start-0 border-top-0 border-end-0 border-bottom rounded-0 mb-2">
-                <div class="d-flex align-items-center">
-                  <input class="form-check-input me-2" type="checkbox" value="" aria-label="..." checked />
-                  <s>Dapibus ac facilisis in</s>
-                </div>
-                <a href="#!" data-mdb-tooltip-init title="Remove item">
-                  <i class="fas fa-times text-primary"></i>
-                </a>
-              </li>
-              <li
-                class="list-group-item d-flex d-flex justify-content-between align-items-center border-start-0 border-top-0 border-end-0 border-bottom rounded-0 mb-2">
-                <div class="d-flex align-items-center">
-                  <input class="form-check-input me-2" type="checkbox" value="" aria-label="..." />
-                  Morbi leo risus
-                </div>
-                <a href="#!" data-mdb-tooltip-init title="Remove item">
-                  <i class="fas fa-times text-primary"></i>
-                </a>
-              </li>
-              <li
-                class="list-group-item d-flex d-flex justify-content-between align-items-center border-start-0 border-top-0 border-end-0 border-bottom rounded-0 mb-2">
-                <div class="d-flex align-items-center">
-                  <input class="form-check-input me-2" type="checkbox" value="" aria-label="..." />
-                  Porta ac consectetur ac
-                </div>
-                <a href="#!" data-mdb-tooltip-init title="Remove item">
-                  <i class="fas fa-times text-primary"></i>
-                </a>
-              </li>
-              <li
-                class="list-group-item d-flex d-flex justify-content-between align-items-center border-start-0 border-top-0 border-end-0 border-bottom rounded-0 mb-0">
-                <div class="d-flex align-items-center">
-                  <input class="form-check-input me-2" type="checkbox" value="" aria-label="..." checked />
-                  Vestibulum at eros
-                </div>
-                <a href="#!" data-mdb-tooltip-init title="Remove item">
-                  <i class="fas fa-times text-primary"></i>
-                </a>
-              </li>
-              <li
-                class="list-group-item d-flex justify-content-between align-items-center border-start-0 border-top-0 border-end-0 border-bottom rounded-0 mb-2">
-                <div class="d-flex align-items-center">
-                  <input class="form-check-input me-2" type="checkbox" value="" aria-label="..." />
-                  Morbi leo risus
-                </div>
-                <a href="#!" data-mdb-tooltip-init title="Remove item">
-                  <i class="fas fa-times text-primary"></i>
-                </a>
-              </li>
+              {% endfor %}
             </ul>
-
           </div>
         </div>
-
       </div>
     </div>
   </div>
 </section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const todoForm = document.getElementById('todo-form');
+    const todoInput = document.getElementById('todo-input');
+    const todoList = document.getElementById('todo-list');
+
+    todoForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const task = todoInput.value;
+        if (!task) return;
+
+        const response = await fetch('/todo_app/todo/add/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({ task })
+        });
+
+        const todo = await response.json();
+        const li = createTodoElement(todo);
+        todoList.insertBefore(li, todoList.firstChild);
+        todoInput.value = '';
+    });
+
+    todoList.addEventListener('click', async (e) => {
+        const li = e.target.closest('li');
+        if (!li) return;
+        const todoId = li.dataset.id;
+
+        if (e.target.classList.contains('toggle-todo')) {
+            const response = await fetch(`/todo_app/todo/${todoId}/toggle/`, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken }
+            });
+            const data = await response.json();
+            const span = li.querySelector('span');
+            span.classList.toggle('text-decoration-line-through', data.completed);
+        }
+
+        if (e.target.closest('.delete-todo')) {
+            await fetch(`/todo_app/todo/${todoId}/delete/`, {
+                method: 'DELETE',
+                headers: { 'X-CSRFToken': csrfToken }
+            });
+            li.remove();
+        }
+    });
+
+    function createTodoElement(todo) {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center border-start-0 border-top-0 border-end-0 border-bottom rounded-0 mb-2';
+        li.dataset.id = todo.id;
+        li.innerHTML = `
+            <div class="d-flex align-items-center">
+                <input class="form-check-input me-2 toggle-todo" type="checkbox" ${todo.completed ? 'checked' : ''} />
+                <span class="${todo.completed ? 'text-decoration-line-through' : ''}">${todo.task}</span>
+            </div>
+            <a href="#!" class="delete-todo" data-mdb-tooltip-init title="Remove item">
+                <i class="fas fa-times text-primary"></i>
+            </a>
+        `;
+        return li;
+    }
+});
+</script>
 {% endblock %}
