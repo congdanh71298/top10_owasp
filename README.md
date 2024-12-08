@@ -29,9 +29,49 @@ conda activate owasp_env
 - Task completion toggling
 - Secure implementation of common web security features
 
-## Security Features Demonstrated
-- CSRF Protection
-- SQL Injection Prevention
-- XSS Protection
-- Secure Authentication
-- Session Security
+## OWASP Top 10 2021 Implementations
+
+### A01: Broken Access Control
+- Login required for dashboard access
+- Todo items restricted to owners only
+- Audit logging of user actions
+
+### A02: Cryptographic Failures
+- Task encryption implemented
+- Password hashing enforced
+
+### A03: Injection
+- Django prepared statements
+- Input validation for email fields
+
+### A04: Insecure Design
+- Rate limiting on views
+- Security tests available:
+```bash
+python -m pytest todo_app/tests/test_security.py -v
+```
+
+### A05: Security Misconfiguration
+- HSTS and security headers enabled
+- Environment variables for sensitive data
+
+### A06: Vulnerable Components
+- Dependencies checked via:
+```bash
+safety check
+npm audit
+```
+
+### A07: Authentication Failures
+- Password strength validation
+- Account lockout protection
+
+### A08: Data Integrity
+- SRI checks for external resources
+- Pinned dependency versions
+
+### A09: Security Logging
+- Comprehensive audit logging
+
+### A10: SSRF Protection
+- URL whitelist implementation
