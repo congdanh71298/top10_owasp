@@ -16,7 +16,13 @@ logger = logging.getLogger('todo_app')
 @login_required
 def index(request):
     todos = Todo.objects.filter(user=request.user)
-    return render(request, 'todo_app/index.html', {'todos': todos})
+    # Decrypt tasks before sending to template
+    todos_data = [{
+        'id': todo.id,
+        'task': todo.decrypted_task,
+        'completed': todo.completed
+    } for todo in todos]
+    return render(request, 'todo_app/index.html', {'todos': todos_data})
 
 def login_view(request):
     if request.method == 'POST':
@@ -65,7 +71,7 @@ def add_todo(request):
         )
         return JsonResponse({
             'id': todo.id,
-            'task': todo.task,
+            'task': todo.decrypted_task,
             'completed': todo.completed
         })
     return JsonResponse({'error': 'Invalid request'}, status=400)
