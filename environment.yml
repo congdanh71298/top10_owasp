@@ -5,5 +5,10 @@ channels:
 dependencies:
   - python=3.13
   - pip
+  - npm
   - pip:
       - django==5.1.3
+      - python-dotenv
+      - safety
+      - pytest
+      - cryptography

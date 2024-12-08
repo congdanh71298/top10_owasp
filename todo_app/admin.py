@@ -1,7 +1,6 @@
 from django.contrib import admin
 from .models import Todo, AuditLog
 
+# Register your models here.
 admin.site.register(Todo)
 admin.site.register(AuditLog)
-
-# Register your models here.
