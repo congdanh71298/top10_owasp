@@ -1,6 +1,6 @@
-# OWASP Top 10 Vulnerabilities Demo with Django
+# Secure Django Implementation of OWASP Top 10
 
-This project demonstrates the OWASP Top 10 Web Application Security Risks with both vulnerable and secure implementations using Django.
+This project demonstrates secure implementations of OWASP Top 10 Web Application Security Risks using Django, following security best practices and countermeasures.
 
 ## Setup Instructions
 
