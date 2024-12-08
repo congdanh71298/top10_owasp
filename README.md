@@ -13,11 +13,21 @@ conda activate owasp_env
 ```
 
 ### Database Setup
-1. Run database migrations
-2. Create a superuser (optional)
+1. Run database migrations:
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+2. Create a superuser (optional):
+```bash
+python manage.py createsuperuser
+```
 
 ### Running the Application
-1. Start the Django development server
+1. Start the Django development server:
+```bash
+python manage.py runserver
+```
 2. Access the application:
   - Main app: http://localhost:8000/todo_app/
   - Login: http://localhost:8000/todo_app/login/
