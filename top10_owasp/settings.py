@@ -192,3 +192,22 @@ CSRF_COOKIE_SECURE = True           # Ensures CSRF cookies only sent over HTTPS
 CSRF_COOKIE_HTTPONLY = True         # Prevents JavaScript access to CSRF cookie
 SESSION_COOKIE_SAMESITE = 'Strict'  # Prevents cookie from being sent in cross-site requests
 CSRF_COOKIE_SAMESITE = 'Strict'     # Prevents CSRF cookie from being sent in cross-site requests
+
+# Add safety checking config
+SAFETY_CHECKS = {
+    'ENABLED': True,
+    'IGNORE_VULNERABILITIES': [],
+    'AUTO_UPDATE': False,
+}
+
+# Package management settings
+PACKAGE_MANAGERS = {
+    'pip': {
+        'requirements_file': 'requirements.txt',
+        'check_command': 'safety check',
+    },
+    'npm': {
+        'package_file': 'package.json',
+        'check_command': 'npm audit',
+    }
+}
