@@ -30,7 +30,7 @@ def rate_limit(key_prefix, max_requests=5, timeout=60):
             # Check rate limit
             requests = cache.get(key, 0)
             if requests >= max_requests:
-                return HttpResponseForbidden("Rate limit exceeded")
+                return HttpResponseForbidden(f"Rate limit exceeded. Please try again in {timeout} seconds.")
 
             # Increment requests
             cache.set(key, requests + 1, timeout)
