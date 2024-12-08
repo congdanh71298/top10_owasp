@@ -4,8 +4,8 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.exceptions import PermissionDenied
-from .forms import CustomUserCreationForm
+from django.core.exceptions import PermissionDenied, ValidationError
+from .forms import CustomUserCreationForm, TodoForm
 from .models import Todo
 from .utils import log_user_action
 import json
@@ -26,11 +26,14 @@ def index(request):
 
 def login_view(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+        email = request.POST.get('email', '').strip()
+        password = request.POST.get('password', '')
+
+        if not email or not password:
+            return render(request, 'todo_app/login.html', {'error': 'Email and password are required'})
 
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.get(email__exact=email)
             user = authenticate(request, username=user.username, password=password)
 
             if user is not None:
@@ -64,16 +67,27 @@ def register_view(request):
 @login_required
 def add_todo(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        todo = Todo.objects.create(
-            user=request.user,
-            task=data['task']
-        )
-        return JsonResponse({
-            'id': todo.id,
-            'task': todo.decrypted_task,
-            'completed': todo.completed
-        })
+        try:
+            data = json.loads(request.body)
+            form = TodoForm(data)
+
+            if form.is_valid():
+                todo = Todo.objects.create(
+                    user=request.user,
+                    task=form.cleaned_data['task']
+                )
+                return JsonResponse({
+                    'id': todo.id,
+                    'task': todo.decrypted_task,
+                    'completed': todo.completed
+                })
+            return JsonResponse({'error': form.errors}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            logger.error(f'Add todo error: {str(e)}')
+            return JsonResponse({'error': 'An error occurred'}, status=500)
+
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 @login_required
