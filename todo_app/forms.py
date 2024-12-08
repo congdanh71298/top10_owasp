@@ -25,15 +25,33 @@ class TodoForm(forms.Form):
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
     first_name = forms.CharField(required=True)
+    username = forms.CharField(required=False)  # Make username optional as we'll set it automatically
 
     class Meta:
         model = User
-        fields = ("username", "email", "password1", "password2")
+        fields = ("first_name", "email", "password1", "password2")
+
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get('email')
+        if email:
+            # Create a valid username from email
+            base_username = email.split('@')[0]
+            # Remove invalid characters and ensure it's unique
+            username = re.sub(r'[^\w.]', '', base_username)
+            # Ensure username is unique
+            counter = 1
+            temp_username = username
+            while User.objects.filter(username=temp_username).exists():
+                temp_username = f"{username}{counter}"
+                counter += 1
+            cleaned_data['username'] = temp_username
+        return cleaned_data
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.username = self.cleaned_data["email"]
         user.email = self.cleaned_data["email"]
+        user.username = self.cleaned_data["username"]
         user.first_name = self.cleaned_data["first_name"]
         if commit:
             user.save()
@@ -44,9 +62,3 @@ class CustomUserCreationForm(UserCreationForm):
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError("A user with this email already exists.")
         return email
-
-    def clean_username(self):
-        username = self.cleaned_data['username']
-        if not re.match(r'^[\w.@+-]+$', username):
-            raise forms.ValidationError("Username can only contain letters, numbers, and @/./+/-/_ characters.")
-        return username
