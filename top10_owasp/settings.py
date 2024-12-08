@@ -175,6 +175,20 @@ LOGGING = {
 }
 
 # Add session security settings
-SESSION_COOKIE_AGE = 1800  # 30 minutes
-SESSION_COOKIE_SECURE = True  # Only send cookie over HTTPS
-SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to session cookie
+SESSION_COOKIE_AGE = 1800           # Set session timeout to 30 minutes
+SESSION_COOKIE_SECURE = True        # Ensures cookies are only sent over HTTPS connections
+SESSION_COOKIE_HTTPONLY = True      # Prevents client-side access to cookies via JavaScript
+
+# Security Headers
+SECURE_HSTS_SECONDS = 31536000      # Forces HTTPS for 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Applies HSTS to all subdomains
+SECURE_HSTS_PRELOAD = True         # Allows site to be included in browser HSTS preload lists
+SECURE_REFERRER_POLICY = 'same-origin'  # Only sends referrer header to same origin
+SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevents browser from MIME-sniffing responses
+X_FRAME_OPTIONS = 'DENY'            # Prevents site from being embedded in iframes
+
+# Cookie Security
+CSRF_COOKIE_SECURE = True           # Ensures CSRF cookies only sent over HTTPS
+CSRF_COOKIE_HTTPONLY = True         # Prevents JavaScript access to CSRF cookie
+SESSION_COOKIE_SAMESITE = 'Strict'  # Prevents cookie from being sent in cross-site requests
+CSRF_COOKIE_SAMESITE = 'Strict'     # Prevents CSRF cookie from being sent in cross-site requests
