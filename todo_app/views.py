@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied, ValidationError
 from .forms import CustomUserCreationForm, TodoForm
 from .models import Todo
-from .utils import log_user_action
+from .utils import log_user_action, rate_limit, validate_object_access
 import json
 import logging
 
@@ -24,6 +24,7 @@ def index(request):
     } for todo in todos]
     return render(request, 'todo_app/index.html', {'todos': todos_data})
 
+@rate_limit('login', max_requests=5, timeout=300)
 def login_view(request):
     if request.method == 'POST':
         email = request.POST.get('email', '').strip()
@@ -53,6 +54,7 @@ def login_view(request):
 
     return render(request, 'todo_app/login.html')
 
+@rate_limit('register', max_requests=3, timeout=600)
 def register_view(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -95,7 +97,7 @@ def toggle_todo(request, todo_id):
     if request.method == 'POST':
         try:
             todo = get_object_or_404(Todo, id=todo_id)
-
+            validate_object_access(todo, request.user)
             # Check if the user owns the todo
             if todo.user != request.user:
                 log_user_action(request, 'unauthorized_access', f'Attempted to toggle todo {todo_id}')
@@ -119,7 +121,7 @@ def delete_todo(request, todo_id):
     if request.method == 'DELETE':
         try:
             todo = get_object_or_404(Todo, id=todo_id)
-
+            validate_object_access(todo, request.user)
             # Check if the user owns the todo
             if todo.user != request.user:
                 log_user_action(request, 'unauthorized_access', f'Attempted to delete todo {todo_id}')
