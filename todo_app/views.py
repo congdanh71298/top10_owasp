@@ -94,27 +94,22 @@ def add_todo(request):
 
 @login_required
 def toggle_todo(request, todo_id):
-    if request.method == 'POST':
-        try:
-            todo = get_object_or_404(Todo, id=todo_id)
-            validate_object_access(todo, request.user)
-            # Check if the user owns the todo
-            if todo.user != request.user:
-                log_user_action(request, 'unauthorized_access', f'Attempted to toggle todo {todo_id}')
-                raise PermissionDenied("You don't have permission to modify this todo")
+    try:
+        todo = Todo.objects.get(id=todo_id)
 
-            todo.completed = not todo.completed
-            todo.save()
-            log_user_action(request, 'toggle_todo', f'Toggled todo {todo_id}')
-            return JsonResponse({'completed': todo.completed})
+        # Add authorization check
+        if todo.user != request.user:
+            return JsonResponse({'error': 'Unauthorized'}, status=403)
 
-        except PermissionDenied as e:
-            return JsonResponse({'error': str(e)}, status=403)
-        except Exception as e:
-            logger.error(f'Toggle todo error: {str(e)}')
-            return JsonResponse({'error': 'An error occurred'}, status=500)
+        todo.completed = not todo.completed
+        todo.save()
+        return JsonResponse({'status': 'success'})
 
-    return JsonResponse({'error': 'Invalid request'}, status=400)
+    except Todo.DoesNotExist:
+        return JsonResponse({'error': 'Todo not found'}, status=404)
+    except Exception as e:
+        logger.error(f"Toggle todo error: {str(e)}")
+        return JsonResponse({'error': 'Server error'}, status=500)
 
 @login_required
 def delete_todo(request, todo_id):
