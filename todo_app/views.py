@@ -63,7 +63,12 @@ def register_view(request):
             login(request, user)
             return redirect('index')
         else:
-            return render(request, 'todo_app/register.html', {'error': form.errors})
+            context = {
+                'error': form.errors,
+                'first_name': request.POST.get('first_name', ''),
+                'email': request.POST.get('email', '')
+            }
+            return render(request, 'todo_app/register.html', context)
     return render(request, 'todo_app/register.html')
 
 @login_required
